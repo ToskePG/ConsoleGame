@@ -11,23 +11,37 @@ public class Test {
         Weapon axe = new Weapon("Axe", 70, 4.0);
 
         // Initialize characters
-        Character warrior = new Character("Warrior", 6, sword);
+        Character warrior = new Character("Warrior", 3, sword);
         Character archer = new Character("Archer", 4, bow);
-        Character barbarian = new Character("Barbarian", 7, axe);
+        Character barbarian = new Character("Barbarian", 5, axe);
+        Character mage = new Character("Mage", 2, new Weapon("Staff", 40, 2.0));
 
         // Initialize game
         VideoGame game = new VideoGame("Epic Battle");
         game.addCharacter(warrior);
         game.addCharacter(archer);
         game.addCharacter(barbarian);
+        game.addCharacter(mage);
         game.addWeapon(sword);
         game.addWeapon(bow);
         game.addWeapon(axe);
+        game.addWeapon(new Weapon("Dagger", 20, 0.5));
 
         // Initialize player
         System.out.print("Enter your username: ");
         String username = scanner.nextLine();
         Player player = new Player(username);
+
+        // Choose initial characters
+        System.out.println("Choose 2 characters for your initial roster:");
+        List<Character> availableCharacters = game.getAvailableCharacters();
+        for (int i = 0; i < availableCharacters.size(); i++) {
+            System.out.println((i + 1) + ". " + availableCharacters.get(i));
+        }
+        for (int i = 0; i < 2; i++) {
+            int choice = getValidInt(scanner, "Choose character " + (i + 1) + ": ", 1, availableCharacters.size());
+            player.addCharacter(availableCharacters.get(choice - 1));
+        }
 
         // Game loop
         while (true) {
@@ -35,10 +49,11 @@ public class Test {
             System.out.println("1. View Characters");
             System.out.println("2. Fight Random Enemy");
             System.out.println("3. View Inventory");
-            System.out.println("4. Equip Weapon");
-            System.out.println("5. Exit");
+            System.out.println("4. Buy Character");
+            System.out.println("5. Buy Weapon");
+            System.out.println("6. Exit");
 
-            int choice = getValidInt(scanner, "Choose an option: ", 1, 5);
+            int choice = getValidInt(scanner, "Choose an option: ", 1, 6);
 
             switch (choice) {
                 case 1:
@@ -84,22 +99,48 @@ public class Test {
                     }
                     break;
                 case 4:
-                    System.out.println("Equip Weapon:");
-                    System.out.println("Available Weapons:");
-                    for (Weapon w : player.getInventory()) {
-                        System.out.println(w);
+                    System.out.println("Characters available for purchase:");
+                    for (Character c : game.getAvailableCharacters()) {
+                        if (!player.getCharacters().contains(c)) {
+                            System.out.println(c + " - Cost: 100 coins");
+                        }
                     }
-                    System.out.print("Enter weapon name: ");
+                    System.out.print("Enter the name of the character you want to buy: ");
                     scanner.nextLine();
-                    String weaponName = scanner.nextLine();
-                    Optional<Weapon> weaponToEquip = player.getInventory().stream().filter(w -> w.toString().contains(weaponName)).findFirst();
-                    if (weaponToEquip.isPresent()) {
-                        player.equipWeaponToCharacter(player.getCharacters().get(0), weaponToEquip.get());
+                    String charName = scanner.nextLine();
+                    Optional<Character> charToBuy = game.getAvailableCharacters().stream()
+                            .filter(c -> c.getName().equalsIgnoreCase(charName) && !player.getCharacters().contains(c))
+                            .findFirst();
+                    if (charToBuy.isPresent() && player.getCoins() >= 100) {
+                        player.spendCoins(100);
+                        player.addCharacter(charToBuy.get());
+                        System.out.println("You bought " + charToBuy.get().getName() + "!");
                     } else {
-                        System.out.println("Weapon not found in inventory!");
+                        System.out.println("Character not found or insufficient coins!");
                     }
                     break;
                 case 5:
+                    System.out.println("Weapons available for purchase:");
+                    for (Weapon w : game.getAvailableWeapons()) {
+                        if (!player.getInventory().contains(w)) {
+                            System.out.println(w + " - Cost: 50 coins");
+                        }
+                    }
+                    System.out.print("Enter the name of the weapon you want to buy: ");
+                    scanner.nextLine();
+                    String weaponName = scanner.nextLine();
+                    Optional<Weapon> weaponToBuy = game.getAvailableWeapons().stream()
+                            .filter(w -> w.toString().contains(weaponName) && !player.getInventory().contains(w))
+                            .findFirst();
+                    if (weaponToBuy.isPresent() && player.getCoins() >= 50) {
+                        player.spendCoins(50);
+                        player.addWeaponToInventory(weaponToBuy.get());
+                        System.out.println("You bought " + weaponToBuy.get().toString() + "!");
+                    } else {
+                        System.out.println("Weapon not found or insufficient coins!");
+                    }
+                    break;
+                case 6:
                     System.out.println("Thanks for playing!");
                     return;
             }
@@ -133,5 +174,4 @@ public class Test {
         int choice = getValidInt(scanner, "Enter your choice: ", 1, characters.size());
         return characters.get(choice - 1);
     }
-
 }

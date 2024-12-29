@@ -1,6 +1,7 @@
 import java.util.*;
 
 public class VideoGame {
+	
 	private String name;
     private List<Character> availableCharacters;
     private List<Weapon> availableWeapons;
@@ -21,6 +22,10 @@ public class VideoGame {
 
     public List<Character> getAvailableCharacters() {
         return availableCharacters;
+    }
+
+    public List<Weapon> getAvailableWeapons() {
+        return availableWeapons;
     }
 
     public Character getRandomEnemy() {
