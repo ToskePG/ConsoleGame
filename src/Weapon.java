@@ -22,6 +22,42 @@ public class Weapon {
 		this.damage = damage;
 		this.weight = weight;
 	}
+
+	public String getName()
+	{
+		return name;
+	}
+
+	public void setName(String name)
+	{
+		this.name = name;
+	}
+
+	public int getDamage()
+	{
+		return damage;
+	}
+
+	public void setDamage(int damage)
+	{
+		this.damage = damage;
+	}
+
+	public double getWeight()
+	{
+		return weight;
+	}
+
+	public void setWeight(double weight) 
+	{
+		this.weight = weight;
+	}
+
+	@Override
+	public String toString()
+	{
+		return "Weapon [name=" + name + ", damage=" + damage + ", weight=" + weight + "]";
+	}
 	
 	
 }
